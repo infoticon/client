@@ -1,0 +1,6 @@
+node_modules
+dist
+.env
+
+# openapi.json and src/clients/generated are BOTH committed on purpose: spec drift
+# is then visible in review, and a fresh clone builds without the API being reachable.

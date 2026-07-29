@@ -1,0 +1,402 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Infoticon API",
+    "description": "Company, IP, Email and Product information API",
+    "version": "2.0.0"
+  },
+  "components": {
+    "securitySchemes": {
+      "apiKey": {
+        "type": "apiKey",
+        "name": "X-API-Key",
+        "in": "header"
+      }
+    },
+    "schemas": {}
+  },
+  "paths": {
+    "/api/v2/companies/{nip}": {
+      "get": {
+        "operationId": "getCompany",
+        "summary": "Get company information by tax number (NIP)",
+        "tags": [
+          "Company"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 2
+            },
+            "in": "path",
+            "name": "nip",
+            "required": true,
+            "description": "Tax number (NIP), optionally prefixed with country code (e.g. PL1234567890)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "taxNumber": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "street": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "buildingNumber": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "premisesNumber": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "postalCode": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "city": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "country": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "countryId": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "county": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "district": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "state": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "website": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "taxStatus": {
+                      "nullable": true,
+                      "type": "boolean"
+                    },
+                    "verifiedAt": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "vatError": {
+                      "type": "boolean"
+                    },
+                    "gusError": {
+                      "type": "boolean"
+                    },
+                    "vatErrorMessage": {
+                      "type": "string"
+                    },
+                    "gusErrorMessage": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "taxNumber",
+                    "name",
+                    "street",
+                    "buildingNumber",
+                    "premisesNumber",
+                    "postalCode",
+                    "city",
+                    "country",
+                    "countryId",
+                    "county",
+                    "district",
+                    "state",
+                    "website",
+                    "taxStatus",
+                    "verifiedAt",
+                    "vatError",
+                    "gusError",
+                    "vatErrorMessage",
+                    "gusErrorMessage"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/ips/{address}": {
+      "get": {
+        "operationId": "getIp",
+        "summary": "Get IP address information (geolocation, VPN/proxy/Tor detection)",
+        "tags": [
+          "IP"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 7
+            },
+            "in": "path",
+            "name": "address",
+            "required": true,
+            "description": "IPv4 address"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ip": {
+                      "type": "string"
+                    },
+                    "countryCode": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "city": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "lat": {
+                      "nullable": true,
+                      "type": "number"
+                    },
+                    "lng": {
+                      "nullable": true,
+                      "type": "number"
+                    },
+                    "provider": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "vpn": {
+                      "nullable": true,
+                      "type": "boolean"
+                    },
+                    "proxy": {
+                      "nullable": true,
+                      "type": "boolean"
+                    },
+                    "tor": {
+                      "nullable": true,
+                      "type": "boolean"
+                    },
+                    "relay": {
+                      "nullable": true,
+                      "type": "boolean"
+                    },
+                    "score": {
+                      "nullable": true,
+                      "type": "number"
+                    },
+                    "risk": {
+                      "nullable": true,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "ip",
+                    "countryCode",
+                    "city",
+                    "lat",
+                    "lng",
+                    "provider",
+                    "vpn",
+                    "proxy",
+                    "tor",
+                    "relay",
+                    "score",
+                    "risk"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/emails/{domain}": {
+      "get": {
+        "operationId": "getEmailDomain",
+        "summary": "Check if email domain is disposable",
+        "tags": [
+          "Email"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            },
+            "in": "path",
+            "name": "domain",
+            "required": true,
+            "description": "Email domain to check (e.g. gmail.com)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "domain": {
+                      "type": "string"
+                    },
+                    "disposable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "domain",
+                    "disposable"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/products/{ean}": {
+      "get": {
+        "operationId": "getProduct",
+        "summary": "Get product information by EAN barcode",
+        "tags": [
+          "Product"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 14
+            },
+            "in": "path",
+            "name": "ean",
+            "required": true,
+            "description": "EAN/GTIN barcode (8-14 digits)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ean": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "trademark": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "weight": {
+                      "nullable": true,
+                      "type": "number"
+                    },
+                    "companyName": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "companyNip": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "companyCity": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "companyStreet": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "companyPostalCode": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "companyCountry": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "companyWebPage": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "gpcCode": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "gpcName": {
+                      "nullable": true,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "ean",
+                    "name",
+                    "description",
+                    "trademark",
+                    "weight",
+                    "companyName",
+                    "companyNip",
+                    "companyCity",
+                    "companyStreet",
+                    "companyPostalCode",
+                    "companyCountry",
+                    "companyWebPage",
+                    "gpcCode",
+                    "gpcName"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "apiKey": []
+    }
+  ]
+}
