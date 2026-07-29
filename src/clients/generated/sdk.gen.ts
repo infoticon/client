@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.js';
 import type { Client, Options as Options2, TDataShape } from './client/index.js';
-import type { GetCompanyData, GetCompanyErrors, GetCompanyResponses, GetEmailDomainData, GetEmailDomainErrors, GetEmailDomainResponses, GetIpData, GetIpErrors, GetIpResponses, GetProductData, GetProductErrors, GetProductResponses } from './types.gen.js';
+import type { GetCardData, GetCardErrors, GetCardResponses, GetCompanyData, GetCompanyErrors, GetCompanyResponses, GetCountryData, GetCountryErrors, GetCountryResponses, GetEmailDomainData, GetEmailDomainErrors, GetEmailDomainResponses, GetExchangeRateData, GetExchangeRateErrors, GetExchangeRateResponses, GetIpData, GetIpErrors, GetIpResponses, GetProductData, GetProductErrors, GetProductResponses } from './types.gen.js';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -37,6 +37,17 @@ export const getIp = <ThrowOnError extends boolean = true>(options: Options<GetI
 });
 
 /**
+ * Get country dictionary entry by ISO 3166-1 alpha-2 code
+ *
+ * The same code that geolocation returns as countryCode. Read from the shared country dictionary — no external provider is involved.
+ */
+export const getCountry = <ThrowOnError extends boolean = true>(options: Options<GetCountryData, ThrowOnError>) => (options.client ?? client).get<GetCountryResponses, GetCountryErrors, ThrowOnError>({
+    security: [{ name: 'X-API-Key', type: 'apiKey' }],
+    url: '/api/v2/countries/{id}',
+    ...options
+});
+
+/**
  * Check if email domain is disposable
  */
 export const getEmailDomain = <ThrowOnError extends boolean = true>(options: Options<GetEmailDomainData, ThrowOnError>) => (options.client ?? client).get<GetEmailDomainResponses, GetEmailDomainErrors, ThrowOnError>({
@@ -51,5 +62,27 @@ export const getEmailDomain = <ThrowOnError extends boolean = true>(options: Opt
 export const getProduct = <ThrowOnError extends boolean = true>(options: Options<GetProductData, ThrowOnError>) => (options.client ?? client).get<GetProductResponses, GetProductErrors, ThrowOnError>({
     security: [{ name: 'X-API-Key', type: 'apiKey' }],
     url: '/api/v2/products/{ean}',
+    ...options
+});
+
+/**
+ * Get the latest exchange rate for a currency pair
+ *
+ * Reads the rate imported by the nightly job. The rate is directional: PLN to EUR is a different value than EUR to PLN. A pair of identical codes has no stored rate and answers 404.
+ */
+export const getExchangeRate = <ThrowOnError extends boolean = true>(options: Options<GetExchangeRateData, ThrowOnError>) => (options.client ?? client).get<GetExchangeRateResponses, GetExchangeRateErrors, ThrowOnError>({
+    security: [{ name: 'X-API-Key', type: 'apiKey' }],
+    url: '/api/v2/exchange-rates/{from}/{to}',
+    ...options
+});
+
+/**
+ * Get card issuer information by BIN/IIN
+ *
+ * Accepts the first 6 to 11 digits of a card number. Anything longer is rejected with 400: the server logs request URLs, so a full card number must never reach the path. The lookup never inspects digits past the 11th anyway. When several prefixes match, the longest one wins.
+ */
+export const getCard = <ThrowOnError extends boolean = true>(options: Options<GetCardData, ThrowOnError>) => (options.client ?? client).get<GetCardResponses, GetCardErrors, ThrowOnError>({
+    security: [{ name: 'X-API-Key', type: 'apiKey' }],
+    url: '/api/v2/cards/{bin}',
     ...options
 });

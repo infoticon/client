@@ -6,16 +6,25 @@ import { createBaseClient } from "./base.js";
 // barrel is never re-exported — otherwise every regeneration could break the
 // package's public API.
 import {
+  getCard,
   getCompany,
+  getCountry,
   getEmailDomain,
+  getExchangeRate,
   getIp,
   getProduct,
 } from "./generated/sdk.gen.js";
 import type {
+  GetCardData,
+  GetCardResponses,
   GetCompanyData,
   GetCompanyResponses,
+  GetCountryData,
+  GetCountryResponses,
   GetEmailDomainData,
   GetEmailDomainResponses,
+  GetExchangeRateData,
+  GetExchangeRateResponses,
   GetIpData,
   GetIpResponses,
   GetProductData,
@@ -27,6 +36,9 @@ export type Company = GetCompanyResponses[200];
 export type IpInfo = GetIpResponses[200];
 export type EmailDomain = GetEmailDomainResponses[200];
 export type Product = GetProductResponses[200];
+export type Country = GetCountryResponses[200];
+export type ExchangeRate = GetExchangeRateResponses[200];
+export type Card = GetCardResponses[200];
 
 /**
  * A company can be resolved from two independent registries, and one can fail
@@ -116,12 +128,56 @@ export const createInfoticonClient = (options: InfoticonClientOptions) => {
     /**
      * Product data by EAN/GTIN barcode (8–14 digits).
      *
-     * An unknown barcode currently surfaces as a `server_error`, not a
-     * `not_found` — the API does not distinguish "no such product" from an
-     * upstream failure.
+     * An unknown barcode rejects with `not_found` (404). A registry outage
+     * rejects with `server_error` carrying `statusCode` 502 or 503, so the two
+     * are distinguishable — a missing product need not be treated as an outage.
      */
     getProduct: async (ean: GetProductData["path"]["ean"]): Promise<Product> => {
       const { data } = await getProduct({ client, path: { ean } });
+      return data;
+    },
+
+    /**
+     * Country dictionary entry by ISO 3166-1 alpha-2 code (`PL`) — the same code
+     * `getIp` returns as `countryCode`. Served from Infoticon's own data, so no
+     * upstream registry can make it fail.
+     *
+     * An unknown code rejects with `not_found`.
+     */
+    getCountry: async (id: GetCountryData["path"]["id"]): Promise<Country> => {
+      const { data } = await getCountry({ client, path: { id } });
+      return data;
+    },
+
+    /**
+     * Latest exchange rate for a currency pair, as a decimal (`0.234567`).
+     *
+     * The rate is directional: `("PLN", "EUR")` is not the reciprocal of
+     * `("EUR", "PLN")`, and both must be requested separately. A pair of
+     * identical codes has no stored rate and rejects with `not_found`, as does
+     * any pair the nightly import has not covered.
+     */
+    getExchangeRate: async (
+      from: GetExchangeRateData["path"]["from"],
+      to: GetExchangeRateData["path"]["to"],
+    ): Promise<ExchangeRate> => {
+      const { data } = await getExchangeRate({ client, path: { from, to } });
+      return data;
+    },
+
+    /**
+     * Card issuer data by BIN/IIN — the first 6 to 11 digits of a card number.
+     *
+     * Pass ONLY the prefix. A full card number is rejected with a
+     * `bad_request`: the API logs request paths, so a PAN must never travel in
+     * one. Truncate on your side; the lookup ignores anything past the 11th
+     * digit anyway. Where several prefixes match, the longest one wins.
+     *
+     * Only `prefix` and `organization` are always present — the remaining
+     * fields are nullable in the underlying registry.
+     */
+    getCard: async (bin: GetCardData["path"]["bin"]): Promise<Card> => {
+      const { data } = await getCard({ client, path: { bin } });
       return data;
     },
   };

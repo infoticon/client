@@ -9,8 +9,11 @@
 export {
   createInfoticonClient,
   getCompanyUpstreamErrors,
+  type Card,
   type Company,
+  type Country,
   type EmailDomain,
+  type ExchangeRate,
   type InfoticonClient,
   type IpInfo,
   type Product,

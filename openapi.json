@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Infoticon API",
-    "description": "Company, IP, Email and Product information API",
+    "description": "Company, IP, Country, Email, Product, exchange rate and card BIN information API",
     "version": "2.0.0"
   },
   "components": {
@@ -420,6 +420,152 @@
         }
       }
     },
+    "/api/v2/countries/{id}": {
+      "get": {
+        "operationId": "getCountry",
+        "summary": "Get country dictionary entry by ISO 3166-1 alpha-2 code",
+        "tags": [
+          "Country"
+        ],
+        "description": "The same code that geolocation returns as countryCode. Read from the shared country dictionary — no external provider is involved.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z]{2}$"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "description": "ISO 3166-1 alpha-2 country code, e.g. PL"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "nativeName": {
+                      "type": "string"
+                    },
+                    "phonePrefixes": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      }
+                    },
+                    "continent": {
+                      "type": "string"
+                    },
+                    "capital": {
+                      "type": "string"
+                    },
+                    "currencies": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "languages": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "nativeName",
+                    "phonePrefixes",
+                    "continent",
+                    "capital",
+                    "currencies",
+                    "languages"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "number"
+                    },
+                    "detail": {
+                      "type": "string"
+                    },
+                    "instance": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "title",
+                    "status"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "number"
+                    },
+                    "detail": {
+                      "type": "string"
+                    },
+                    "instance": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "title",
+                    "status"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v2/emails/{domain}": {
       "get": {
         "operationId": "getEmailDomain",
@@ -769,6 +915,271 @@
             }
           },
           "503": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "number"
+                    },
+                    "detail": {
+                      "type": "string"
+                    },
+                    "instance": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "title",
+                    "status"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/exchange-rates/{from}/{to}": {
+      "get": {
+        "operationId": "getExchangeRate",
+        "summary": "Get the latest exchange rate for a currency pair",
+        "tags": [
+          "Money"
+        ],
+        "description": "Reads the rate imported by the nightly job. The rate is directional: PLN to EUR is a different value than EUR to PLN. A pair of identical codes has no stored rate and answers 404.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z]{3}$"
+            },
+            "in": "path",
+            "name": "from",
+            "required": true,
+            "description": "ISO 4217 base currency code, e.g. PLN"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z]{3}$"
+            },
+            "in": "path",
+            "name": "to",
+            "required": true,
+            "description": "ISO 4217 quote currency code, e.g. EUR"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "from": {
+                      "type": "string"
+                    },
+                    "to": {
+                      "type": "string"
+                    },
+                    "rate": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "from",
+                    "to",
+                    "rate"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "number"
+                    },
+                    "detail": {
+                      "type": "string"
+                    },
+                    "instance": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "title",
+                    "status"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "number"
+                    },
+                    "detail": {
+                      "type": "string"
+                    },
+                    "instance": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "title",
+                    "status"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/cards/{bin}": {
+      "get": {
+        "operationId": "getCard",
+        "summary": "Get card issuer information by BIN/IIN",
+        "tags": [
+          "Money"
+        ],
+        "description": "Accepts the first 6 to 11 digits of a card number. Anything longer is rejected with 400: the server logs request URLs, so a full card number must never reach the path. The lookup never inspects digits past the 11th anyway. When several prefixes match, the longest one wins.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{6,11}$"
+            },
+            "in": "path",
+            "name": "bin",
+            "required": true,
+            "description": "Card BIN/IIN — the first 6 to 11 digits. Do not send the full card number."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "prefix": {
+                      "type": "number"
+                    },
+                    "organization": {
+                      "type": "string"
+                    },
+                    "issuer": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "type": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "product": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "countryCode": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "segment": {
+                      "nullable": true,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "prefix",
+                    "organization",
+                    "issuer",
+                    "type",
+                    "product",
+                    "countryCode",
+                    "segment"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "number"
+                    },
+                    "detail": {
+                      "type": "string"
+                    },
+                    "instance": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "title",
+                    "status"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
             "description": "Default Response",
             "content": {
               "application/json": {

@@ -1,7 +1,7 @@
 {
   "name": "@infoticon/client",
-  "version": "0.2.0",
-  "description": "Typed TypeScript client for the Infoticon API v2 (company, IP, email domain and product lookups)",
+  "version": "0.3.0",
+  "description": "Typed TypeScript client for the Infoticon API v2 (company, IP, email domain, product, country, exchange rate and card BIN lookups)",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,

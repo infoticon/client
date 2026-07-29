@@ -8,12 +8,18 @@ const getCompanyMock = vi.fn();
 const getIpMock = vi.fn();
 const getEmailDomainMock = vi.fn();
 const getProductMock = vi.fn();
+const getCountryMock = vi.fn();
+const getExchangeRateMock = vi.fn();
+const getCardMock = vi.fn();
 
 vi.mock("./generated/sdk.gen.js", () => ({
   getCompany: (...args: unknown[]) => getCompanyMock(...args),
   getIp: (...args: unknown[]) => getIpMock(...args),
   getEmailDomain: (...args: unknown[]) => getEmailDomainMock(...args),
   getProduct: (...args: unknown[]) => getProductMock(...args),
+  getCountry: (...args: unknown[]) => getCountryMock(...args),
+  getExchangeRate: (...args: unknown[]) => getExchangeRateMock(...args),
+  getCard: (...args: unknown[]) => getCardMock(...args),
 }));
 
 // Dynamic import AFTER vi.mock, so the mock is registered first.
@@ -112,6 +118,66 @@ describe("createInfoticonClient", () => {
       expect(result).toEqual({ ean: "5901234123457", name: "Test" });
       expect(getProductMock).toHaveBeenCalledWith(
         expect.objectContaining({ path: { ean: "5901234123457" } }),
+      );
+    });
+  });
+
+  describe("getCountry", () => {
+    it("should pass the country code as a path parameter", async () => {
+      getCountryMock.mockResolvedValue({ data: { id: "PL", name: "Poland" } });
+
+      const client = createInfoticonClient(OPTIONS);
+      const result = await client.getCountry("PL");
+
+      expect(result).toEqual({ id: "PL", name: "Poland" });
+      expect(getCountryMock).toHaveBeenCalledWith(
+        expect.objectContaining({ path: { id: "PL" } }),
+      );
+    });
+  });
+
+  describe("getExchangeRate", () => {
+    // Both currencies are positional, and the order carries meaning: the rate is
+    // directional, so swapping the arguments asks a different question.
+    it("should pass both currencies as path parameters in order", async () => {
+      getExchangeRateMock.mockResolvedValue({
+        data: { from: "PLN", to: "EUR", rate: 0.234567 },
+      });
+
+      const client = createInfoticonClient(OPTIONS);
+      const result = await client.getExchangeRate("PLN", "EUR");
+
+      expect(result).toEqual({ from: "PLN", to: "EUR", rate: 0.234567 });
+      expect(getExchangeRateMock).toHaveBeenCalledWith(
+        expect.objectContaining({ path: { from: "PLN", to: "EUR" } }),
+      );
+    });
+  });
+
+  describe("getCard", () => {
+    it("should pass the BIN as a path parameter", async () => {
+      getCardMock.mockResolvedValue({ data: { prefix: 453201, organization: "VISA" } });
+
+      const client = createInfoticonClient(OPTIONS);
+      const result = await client.getCard("453201");
+
+      expect(result).toEqual({ prefix: 453201, organization: "VISA" });
+      expect(getCardMock).toHaveBeenCalledWith(
+        expect.objectContaining({ path: { bin: "453201" } }),
+      );
+    });
+
+    // The wrapper deliberately does NOT truncate a full card number on the
+    // caller's behalf — silently sending 11 of 16 digits would hide that the
+    // caller is handling a PAN where it should not. The API answers 400.
+    it("should forward an over-long number instead of truncating it", async () => {
+      getCardMock.mockRejectedValue(new Error("400"));
+
+      const client = createInfoticonClient(OPTIONS);
+
+      await expect(client.getCard("4532011112223333")).rejects.toThrow("400");
+      expect(getCardMock).toHaveBeenCalledWith(
+        expect.objectContaining({ path: { bin: "4532011112223333" } }),
       );
     });
   });

@@ -145,6 +145,61 @@ export type GetIpResponses = {
 
 export type GetIpResponse = GetIpResponses[keyof GetIpResponses];
 
+export type GetCountryData = {
+    body?: never;
+    path: {
+        /**
+         * ISO 3166-1 alpha-2 country code, e.g. PL
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v2/countries/{id}';
+};
+
+export type GetCountryErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        type: string;
+        title: string;
+        status: number;
+        detail?: string;
+        instance?: string;
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        type: string;
+        title: string;
+        status: number;
+        detail?: string;
+        instance?: string;
+    };
+};
+
+export type GetCountryError = GetCountryErrors[keyof GetCountryErrors];
+
+export type GetCountryResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        id: string;
+        name: string;
+        nativeName: string;
+        phonePrefixes: Array<number>;
+        continent: string;
+        capital: string;
+        currencies: Array<string>;
+        languages: Array<string>;
+    };
+};
+
+export type GetCountryResponse = GetCountryResponses[keyof GetCountryResponses];
+
 export type GetEmailDomainData = {
     body?: never;
     path: {
@@ -284,3 +339,111 @@ export type GetProductResponses = {
 };
 
 export type GetProductResponse = GetProductResponses[keyof GetProductResponses];
+
+export type GetExchangeRateData = {
+    body?: never;
+    path: {
+        /**
+         * ISO 4217 base currency code, e.g. PLN
+         */
+        from: string;
+        /**
+         * ISO 4217 quote currency code, e.g. EUR
+         */
+        to: string;
+    };
+    query?: never;
+    url: '/api/v2/exchange-rates/{from}/{to}';
+};
+
+export type GetExchangeRateErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        type: string;
+        title: string;
+        status: number;
+        detail?: string;
+        instance?: string;
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        type: string;
+        title: string;
+        status: number;
+        detail?: string;
+        instance?: string;
+    };
+};
+
+export type GetExchangeRateError = GetExchangeRateErrors[keyof GetExchangeRateErrors];
+
+export type GetExchangeRateResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        from: string;
+        to: string;
+        rate: number;
+    };
+};
+
+export type GetExchangeRateResponse = GetExchangeRateResponses[keyof GetExchangeRateResponses];
+
+export type GetCardData = {
+    body?: never;
+    path: {
+        /**
+         * Card BIN/IIN — the first 6 to 11 digits. Do not send the full card number.
+         */
+        bin: string;
+    };
+    query?: never;
+    url: '/api/v2/cards/{bin}';
+};
+
+export type GetCardErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        type: string;
+        title: string;
+        status: number;
+        detail?: string;
+        instance?: string;
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        type: string;
+        title: string;
+        status: number;
+        detail?: string;
+        instance?: string;
+    };
+};
+
+export type GetCardError = GetCardErrors[keyof GetCardErrors];
+
+export type GetCardResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        prefix: number;
+        organization: string;
+        issuer: string | null;
+        type: string | null;
+        product: string | null;
+        countryCode: string | null;
+        segment: string | null;
+    };
+};
+
+export type GetCardResponse = GetCardResponses[keyof GetCardResponses];
