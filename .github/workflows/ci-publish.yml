@@ -63,18 +63,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Trusted publishing needs Node >= 22.14.0 and npm >= 11.5.1. Node 22 still
-      # ships npm 10.x, so the CLI has to be upgraded explicitly — without this the
-      # publish fails with a misleading 404/ENEEDAUTH rather than a version error.
+      # Matches npm's canonical trusted-publishing example. Node 24 bundles an npm
+      # new enough for OIDC (>= 11.5.1), which removes the separate global-upgrade
+      # step — that step installed npm 12 onto a Node version npm 12 does not
+      # support, and it is one less moving part in a release build.
+      #
+      # Caching is off deliberately: npm's docs say never to cache in release
+      # builds, so the published artifact is always built from a clean tree.
       - name: Setup Node.js for npm
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "24"
           registry-url: https://registry.npmjs.org/
-          cache: npm
 
-      - name: Upgrade npm for trusted publishing
-        run: npm install -g npm@latest
+      - name: Report npm version
+        run: npm --version # trusted publishing requires >= 11.5.1
 
       - name: Install dependencies
         run: npm ci
