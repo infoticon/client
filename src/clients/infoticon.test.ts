@@ -37,10 +37,7 @@ const COMPANY = {
   website: null,
   taxStatus: true,
   verifiedAt: "2026-07-29T00:00:00.000Z",
-  vatError: false,
-  gusError: false,
-  vatErrorMessage: "",
-  gusErrorMessage: "",
+  sources: { gus: "ok", vat: "ok" },
 };
 
 describe("createInfoticonClient", () => {
@@ -127,25 +124,24 @@ describe("getCompanyUpstreamErrors", () => {
 
   it("should report the GUS failure that a 200 response would otherwise hide", () => {
     expect(
-      getCompanyUpstreamErrors({
-        ...COMPANY,
-        gusError: true,
-        gusErrorMessage: "Entity not found in GUS",
-      }),
-    ).toEqual([{ source: "gus", message: "Entity not found in GUS" }]);
+      getCompanyUpstreamErrors({ sources: { gus: "unavailable", vat: "ok" } }),
+    ).toEqual([{ source: "gus", status: "unavailable" }]);
   });
 
   it("should report both sources independently", () => {
     expect(
-      getCompanyUpstreamErrors({
-        vatError: true,
-        vatErrorMessage: "Subject not found",
-        gusError: true,
-        gusErrorMessage: "Entity not found in GUS",
-      }),
+      getCompanyUpstreamErrors({ sources: { gus: "not_found", vat: "not_found" } }),
     ).toEqual([
-      { source: "vat", message: "Subject not found" },
-      { source: "gus", message: "Entity not found in GUS" },
+      { source: "gus", status: "not_found" },
+      { source: "vat", status: "not_found" },
     ]);
+  });
+
+  // A foreign tax number legitimately has no GUS entry — that is the expected
+  // outcome, not a degradation, so it must not be reported as a problem.
+  it("should not report not_applicable as a problem", () => {
+    expect(
+      getCompanyUpstreamErrors({ sources: { gus: "not_applicable", vat: "ok" } }),
+    ).toEqual([]);
   });
 });

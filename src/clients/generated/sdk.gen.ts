@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.js';
 import type { Client, Options as Options2, TDataShape } from './client/index.js';
-import type { GetCompanyData, GetCompanyResponses, GetEmailDomainData, GetEmailDomainResponses, GetIpData, GetIpResponses, GetProductData, GetProductResponses } from './types.gen.js';
+import type { GetCompanyData, GetCompanyErrors, GetCompanyResponses, GetEmailDomainData, GetEmailDomainResponses, GetIpData, GetIpResponses, GetProductData, GetProductErrors, GetProductResponses } from './types.gen.js';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -21,7 +21,7 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 /**
  * Get company information by tax number (NIP)
  */
-export const getCompany = <ThrowOnError extends boolean = true>(options: Options<GetCompanyData, ThrowOnError>) => (options.client ?? client).get<GetCompanyResponses, unknown, ThrowOnError>({
+export const getCompany = <ThrowOnError extends boolean = true>(options: Options<GetCompanyData, ThrowOnError>) => (options.client ?? client).get<GetCompanyResponses, GetCompanyErrors, ThrowOnError>({
     security: [{ name: 'X-API-Key', type: 'apiKey' }],
     url: '/api/v2/companies/{nip}',
     ...options
@@ -48,7 +48,7 @@ export const getEmailDomain = <ThrowOnError extends boolean = true>(options: Opt
 /**
  * Get product information by EAN barcode
  */
-export const getProduct = <ThrowOnError extends boolean = true>(options: Options<GetProductData, ThrowOnError>) => (options.client ?? client).get<GetProductResponses, unknown, ThrowOnError>({
+export const getProduct = <ThrowOnError extends boolean = true>(options: Options<GetProductData, ThrowOnError>) => (options.client ?? client).get<GetProductResponses, GetProductErrors, ThrowOnError>({
     security: [{ name: 'X-API-Key', type: 'apiKey' }],
     url: '/api/v2/products/{ean}',
     ...options

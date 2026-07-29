@@ -16,6 +16,21 @@ export type GetCompanyData = {
     url: '/api/v2/companies/{nip}';
 };
 
+export type GetCompanyErrors = {
+    /**
+     * Default Response
+     */
+    404: {
+        type: string;
+        title: string;
+        status: number;
+        detail?: string;
+        instance?: string;
+    };
+};
+
+export type GetCompanyError = GetCompanyErrors[keyof GetCompanyErrors];
+
 export type GetCompanyResponses = {
     /**
      * Default Response
@@ -36,10 +51,16 @@ export type GetCompanyResponses = {
         website: string | null;
         taxStatus: boolean | null;
         verifiedAt: string | null;
-        vatError: boolean;
-        gusError: boolean;
-        vatErrorMessage: string;
-        gusErrorMessage: string;
+        sources: {
+            /**
+             * ok — rejestr odpowiedział i miał dane; not_found — odpowiedział, ale nie zna podmiotu; unavailable — niedostępny; not_applicable — nie dotyczy tego zapytania
+             */
+            gus: 'ok' | 'not_found' | 'unavailable' | 'not_applicable';
+            /**
+             * ok — rejestr odpowiedział i miał dane; not_found — odpowiedział, ale nie zna podmiotu; unavailable — niedostępny; not_applicable — nie dotyczy tego zapytania
+             */
+            vat: 'ok' | 'not_found' | 'unavailable' | 'not_applicable';
+        };
     };
 };
 
@@ -114,6 +135,21 @@ export type GetProductData = {
     query?: never;
     url: '/api/v2/products/{ean}';
 };
+
+export type GetProductErrors = {
+    /**
+     * Default Response
+     */
+    404: {
+        type: string;
+        title: string;
+        status: number;
+        detail?: string;
+        instance?: string;
+    };
+};
+
+export type GetProductError = GetProductErrors[keyof GetProductErrors];
 
 export type GetProductResponses = {
     /**

@@ -29,25 +29,39 @@ export type EmailDomain = GetEmailDomainResponses[200];
 export type Product = GetProductResponses[200];
 
 /**
- * `getCompany` never returns 404. A tax number the registries do not know still
- * comes back as `200`, with `name: ""`, null address fields and the relevant
- * `*Error` flag set. Callers that treat a resolved promise as "found" will
- * silently accept empty records, so this helper makes the partial-failure case
- * explicit:
+ * A company can be resolved from two independent registries, and one can fail
+ * while the other succeeds — so a `200` does not guarantee a complete record.
+ * `sources` reports what each registry did:
+ *
+ *   ok             the registry answered and had data
+ *   not_found      it answered, but does not know the subject
+ *   unavailable    it could not be reached or is misconfigured
+ *   not_applicable it does not apply here (GUS for a non-Polish company)
+ *
+ * This helper surfaces the registries that did not deliver, so partial results
+ * are not mistaken for complete ones:
  *
  *   const company = await client.getCompany("PL1234567890");
  *   const problems = getCompanyUpstreamErrors(company);
  *   if (problems.length > 0) { ... }
  *
- * `vatError` covers the VAT whitelist / VIES lookup, `gusError` the GUS registry.
- * One can fail while the other succeeds, so the result is a list.
+ * `not_applicable` is deliberately excluded — it is the expected outcome for a
+ * foreign tax number, not a degradation.
+ *
+ * When NO registry knows the subject the API now answers `404`, so the
+ * "resolved promise but empty record" case this helper used to guard against
+ * no longer reaches the caller at all.
  */
 export const getCompanyUpstreamErrors = (
-  company: Pick<Company, "vatError" | "vatErrorMessage" | "gusError" | "gusErrorMessage">,
-): ReadonlyArray<{ source: "vat" | "gus"; message: string }> => {
-  const problems: Array<{ source: "vat" | "gus"; message: string }> = [];
-  if (company.vatError) problems.push({ source: "vat", message: company.vatErrorMessage });
-  if (company.gusError) problems.push({ source: "gus", message: company.gusErrorMessage });
+  company: Pick<Company, "sources">,
+): ReadonlyArray<{ source: "vat" | "gus"; status: "not_found" | "unavailable" }> => {
+  const problems: Array<{ source: "vat" | "gus"; status: "not_found" | "unavailable" }> = [];
+  for (const source of ["gus", "vat"] as const) {
+    const status = company.sources[source];
+    if (status === "not_found" || status === "unavailable") {
+      problems.push({ source, status });
+    }
+  }
   return problems;
 };
 
