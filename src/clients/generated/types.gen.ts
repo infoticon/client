@@ -20,6 +20,16 @@ export type GetCompanyErrors = {
     /**
      * Default Response
      */
+    401: {
+        type: string;
+        title: string;
+        status: number;
+        detail?: string;
+        instance?: string;
+    };
+    /**
+     * Default Response
+     */
     404: {
         type: string;
         title: string;
@@ -78,6 +88,41 @@ export type GetIpData = {
     url: '/api/v2/ips/{address}';
 };
 
+export type GetIpErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        type: string;
+        title: string;
+        status: number;
+        detail?: string;
+        instance?: string;
+    };
+    /**
+     * Default Response
+     */
+    502: {
+        type: string;
+        title: string;
+        status: number;
+        detail?: string;
+        instance?: string;
+    };
+    /**
+     * Default Response
+     */
+    503: {
+        type: string;
+        title: string;
+        status: number;
+        detail?: string;
+        instance?: string;
+    };
+};
+
+export type GetIpError = GetIpErrors[keyof GetIpErrors];
+
 export type GetIpResponses = {
     /**
      * Default Response
@@ -112,6 +157,41 @@ export type GetEmailDomainData = {
     url: '/api/v2/emails/{domain}';
 };
 
+export type GetEmailDomainErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        type: string;
+        title: string;
+        status: number;
+        detail?: string;
+        instance?: string;
+    };
+    /**
+     * Default Response
+     */
+    502: {
+        type: string;
+        title: string;
+        status: number;
+        detail?: string;
+        instance?: string;
+    };
+    /**
+     * Default Response
+     */
+    503: {
+        type: string;
+        title: string;
+        status: number;
+        detail?: string;
+        instance?: string;
+    };
+};
+
+export type GetEmailDomainError = GetEmailDomainErrors[keyof GetEmailDomainErrors];
+
 export type GetEmailDomainResponses = {
     /**
      * Default Response
@@ -140,7 +220,37 @@ export type GetProductErrors = {
     /**
      * Default Response
      */
+    401: {
+        type: string;
+        title: string;
+        status: number;
+        detail?: string;
+        instance?: string;
+    };
+    /**
+     * Default Response
+     */
     404: {
+        type: string;
+        title: string;
+        status: number;
+        detail?: string;
+        instance?: string;
+    };
+    /**
+     * Default Response
+     */
+    502: {
+        type: string;
+        title: string;
+        status: number;
+        detail?: string;
+        instance?: string;
+    };
+    /**
+     * Default Response
+     */
+    503: {
         type: string;
         title: string;
         status: number;

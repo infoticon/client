@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.js';
 import type { Client, Options as Options2, TDataShape } from './client/index.js';
-import type { GetCompanyData, GetCompanyErrors, GetCompanyResponses, GetEmailDomainData, GetEmailDomainResponses, GetIpData, GetIpResponses, GetProductData, GetProductErrors, GetProductResponses } from './types.gen.js';
+import type { GetCompanyData, GetCompanyErrors, GetCompanyResponses, GetEmailDomainData, GetEmailDomainErrors, GetEmailDomainResponses, GetIpData, GetIpErrors, GetIpResponses, GetProductData, GetProductErrors, GetProductResponses } from './types.gen.js';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -30,7 +30,7 @@ export const getCompany = <ThrowOnError extends boolean = true>(options: Options
 /**
  * Get IP address information (geolocation, VPN/proxy/Tor detection)
  */
-export const getIp = <ThrowOnError extends boolean = true>(options: Options<GetIpData, ThrowOnError>) => (options.client ?? client).get<GetIpResponses, unknown, ThrowOnError>({
+export const getIp = <ThrowOnError extends boolean = true>(options: Options<GetIpData, ThrowOnError>) => (options.client ?? client).get<GetIpResponses, GetIpErrors, ThrowOnError>({
     security: [{ name: 'X-API-Key', type: 'apiKey' }],
     url: '/api/v2/ips/{address}',
     ...options
@@ -39,7 +39,7 @@ export const getIp = <ThrowOnError extends boolean = true>(options: Options<GetI
 /**
  * Check if email domain is disposable
  */
-export const getEmailDomain = <ThrowOnError extends boolean = true>(options: Options<GetEmailDomainData, ThrowOnError>) => (options.client ?? client).get<GetEmailDomainResponses, unknown, ThrowOnError>({
+export const getEmailDomain = <ThrowOnError extends boolean = true>(options: Options<GetEmailDomainData, ThrowOnError>) => (options.client ?? client).get<GetEmailDomainResponses, GetEmailDomainErrors, ThrowOnError>({
     security: [{ name: 'X-API-Key', type: 'apiKey' }],
     url: '/api/v2/emails/{domain}',
     ...options
